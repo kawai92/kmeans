@@ -6,6 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import mean_squared_error
 import itertools
 from sklearn.metrics import silhouette_samples, silhouette_score
+import sys
 
 def draw_scatterplot(x_data, x_label, y_data, y_label):
     fig = plt.figure(figsize=(8,8))
@@ -103,13 +104,15 @@ def draw_clusters_3d(biased_dataset_3, predictions):
                         color=color)
     
 def draw_movie_clusters(clustered, max_users, max_movies):
+    reload(sys)  
+    sys.setdefaultencoding('UTF8')
+    # print(sys.getdefaultencoding())
     c=1
     for cluster_id in clustered.group.unique():
         # To improve visibility, we're showing at most max_users users and max_movies movies per cluster.
         # You can change these values to see more users & movies per cluster
-        d = clustered[clustered.group == cluster_id].drop(['index', 'group'], axis=1)
+        d = clustered[clustered.group == cluster_id].drop(['index', 'group'], axis=1)#No idea why the columns label have 'u' before them?!
         n_users_in_cluster = d.shape[0]
-        
         d = sort_by_rating_density(d, max_movies, max_users)
         
         d = d.reindex_axis(d.mean().sort_values(ascending=False).index, axis=1)
@@ -132,7 +135,7 @@ def draw_movie_clusters(clustered, max_users, max_movies):
             ax.set_xticks(np.arange(d.shape[1]) , minor=False)
 
             ax.set_xticklabels(labels, minor=False)
-                        
+                            
             ax.get_yaxis().set_visible(False)
 
             # Heatmap
